@@ -41,3 +41,6 @@ window.getSlug = require('speakingurl')
 window.datepicker = require('js-datepicker')
 
 window.datepickerAlter = require('@chenfengyuan/datepicker')
+
+/** AXIOS */
+// window.axios.defaults.headers.common['X-CSRF-TOKEN'] = $('meta[name="csrf-token"]').attr('content');

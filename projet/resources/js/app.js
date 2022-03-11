@@ -11,6 +11,16 @@ $(function () {
         $("#input-slug").val(valeur);
     });
 
+    function initialTabCaisse () {
+        if ($('#resultat-affichage').val()) {
+            $('#resultat-tab').html(`${$('#resultat-affichage').val()} €`)
+        }
+    }
+
+    initialTabCaisse()
+
+    console.log('ready');
+
     /** DatePicker */
     /*$('[data-toggle="datepicker"]').datepicker({
         language: "fr-FR",
@@ -18,11 +28,15 @@ $(function () {
     });*/
 
     const picker = datepicker('[data-toggle="datepicker"]', {
+        format: 'dd/mm/yyyy',
         startDay: 1,
+        onShow: instance => {
+            console.log('Calendar showing.', instance)
+        },
         // Event callbacks.
         onSelect: (instance) => {
             // Show which date was selected.
-            // console.log(instance.dateSelected);
+            console.log('onSelect', instance.dateSelected);
         },
         // Customizations.
         formatter: (input, date, instance) => {
@@ -144,16 +158,60 @@ $(function () {
     });
 
     /** Formulaire */
-    $("#form-caisse").submit(function (event) {
+    $("#form-caisse").submit(async function (event) {
         event.preventDefault();
 
         let data = new FormData(this);
+        let method = 'POST'
 
-        console.log("submit", data.toString());
+        data.append('ajax', true)
+
+        if ($('[name="_method"]').val() === 'PUT') {
+            method = 'PUT'
+        }
 
         console.log("entries");
         for (var pair of data.entries()) {
             console.log(`Key: ${pair[0]} === Value: ${pair[1]}`);
         }
+
+
+        let url = $(this).attr('action')
+
+        console.log(
+            'URL', 
+            url, 
+            $('[name="_method"]').val(),
+            $('[name="_method"]').val() ? 'PUT' : 'POST',
+            method
+        )
+
+        try {
+            let response = await fetch(
+              url, {
+              method: method,
+              headers: {
+                'X-Requested-With': 'xmlhttprequest',
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+              },
+              body: data
+            })
+            let responseData = await response.json()
+            // La réponse n'est pas bonne (pas 200), on affiche les erreurs
+            if (response.ok === false) {
+              console.log('error', responseData)
+
+              F.alert('alert-danger', responseData);
+            // La réponse est ok, on vide le formulaire
+            } else {
+                console.log('success', responseData)
+
+                F.alert('alert-success', 'Enregistrement success');
+            }
+          } catch (e) {
+            console.log('error', e)
+
+            F.alert('alert-danger', e);
+          }
     });
 });

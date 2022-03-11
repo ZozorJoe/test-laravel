@@ -28,8 +28,9 @@ export function addElement($element = null, $end = null, value = "") {
             break;
     }
 
-    html = html.replace("d-none", " ");
+    html = html.replace("d-none", "");
     html = html.replace("clone-billets", "");
+    html = html.replace(/_clone/gi, "");
     html = html.replace(/clone/gi, "");
 
     $end.before(`<div class="row mt-1 ${id}">${html}</div>`);
@@ -77,4 +78,10 @@ export function calcul($elementsNominal, $elementsQuantite) {
     }
 
     return somme;
+}
+
+export function alert(type, message) {
+    $('#alert-ajax').removeClass('d-none');
+    $('#alert-type').addClass(type);
+    $('#alert-content').html(message);
 }

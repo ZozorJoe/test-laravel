@@ -29,9 +29,12 @@ Route::middleware(['auth'])->group(function () {
         return view('home');
     })->name('home');
 
+    // caisse/1/edit
+
     # Operations
     Route::resource('operation', OperationController::class);
 
     # Caisses
     Route::resource('caisse', CaisseController::class);
+    #Route::put('caisse/{caisse}/edit', [CaisseController::class, 'update']);
 });
